@@ -5,6 +5,7 @@
 import pandas as pd
 import numpy as np
 import joblib
+import os
 
 from sklearn.model_selection import train_test_split, cross_validate
 from sklearn.preprocessing import StandardScaler
@@ -18,7 +19,14 @@ from sklearn.metrics import classification_report, confusion_matrix
 # 1. CARGAR DATASET
 # ==============================
 
-data = pd.read_csv("diabetes.csv")
+# Obtener ruta del archivo actual
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Construir ruta completa del CSV
+file_path = os.path.join(current_dir, "diabetes.csv")
+
+# Cargar dataset
+data = pd.read_csv(file_path)
 
 X = data.drop("Outcome", axis=1)
 y = data["Outcome"]
@@ -117,6 +125,12 @@ print(confusion_matrix(y_test, y_pred))
 # 7. GUARDAR MODELO GANADOR
 # ==============================
 
-joblib.dump(best_model, "best_model.pkl")
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+model_path = os.path.join(current_dir, "best_model.pkl")
+
+joblib.dump(best_model, model_path)
+
+print("\nModelo guardado en:", model_path)
 
 print("\nModelo guardado como 'best_model.pkl'")
