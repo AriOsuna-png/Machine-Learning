@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 import joblib
 import numpy as np
 import os
@@ -27,13 +26,7 @@ def home():
 # ==============================
 # ENDPOINT DE PREDICCIÓN
 # ==============================
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
 
 @app.post("/predict")
 def predict(data: dict):
