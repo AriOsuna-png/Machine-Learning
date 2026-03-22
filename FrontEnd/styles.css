@@ -1,0 +1,124 @@
+body{
+font-family: Arial;
+background: linear-gradient(135deg,#2c3e50,#4ca1af);
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+.app{
+background:white;
+width:380px;
+padding:30px;
+border-radius:15px;
+box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
+
+.header{
+text-align:center;
+margin-bottom:20px;
+}
+
+.header h1{
+margin:0;
+color:#2c3e50;
+}
+
+.header p{
+font-size:13px;
+color:gray;
+}
+
+.input-group{
+margin-top:12px;
+}
+
+label{
+font-weight:bold;
+font-size:14px;
+}
+
+input{
+width:100%;
+padding:9px;
+margin-top:5px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+margin-top:20px;
+width:100%;
+padding:12px;
+background:#3498db;
+border:none;
+color:white;
+font-size:16px;
+border-radius:8px;
+cursor:pointer;
+transition:0.2s;
+}
+
+button:hover{
+background:#2980b9;
+}
+
+.resultado{
+margin-top:20px;
+text-align:center;
+font-size:18px;
+font-weight:bold;
+}
+
+.footer{
+margin-top:20px;
+font-size:11px;
+text-align:center;
+color:gray;
+}
+
+.campo{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.info{
+font-size:11px;
+color:#666;
+width:140px;
+}
+
+.tooltip{
+position: relative;
+display: inline-block;
+cursor: pointer;
+margin-left:6px;
+color:#3498db;
+font-weight:bold;
+}
+
+.tooltiptext{
+visibility: hidden;
+width: 220px;
+background-color: #333;
+color: white;
+text-align: center;
+border-radius: 6px;
+padding: 6px;
+position: absolute;
+z-index: 1;
+bottom: 130%;
+left: 50%;
+transform: translateX(-50%);
+opacity: 0;
+transition: opacity 0.3s;
+font-size:12px;
+}
+
+.tooltip:hover .tooltiptext{
+visibility: visible;
+opacity: 1;
+}

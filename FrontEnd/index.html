@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<meta charset="UTF-8">
+<title>Diabetes Predictor</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="app">
+
+<div class="header">
+<h1>Diabetes Predictor</h1>
+<p>Sistema basado en Machine Learning</p>
+</div>
+
+<div class="input-group">
+<label>Embarazos</label>
+<input type="number" id="pregnancies">
+</div>
+
+<div class="input-group">
+<label>Glucosa</label>
+<input type="number" id="glucose">
+</div>
+
+<div class="input-group">
+<label>Presión arterial</label>
+<input type="number" id="blood_pressure">
+</div>
+
+<div class="input-group">
+<label>Grosor de piel (Skin Thickness)</label>
+<input type="number" id="skin_thickness">
+</div>
+
+<div class="input-group">
+<label>Insulina</label>
+<input type="number" id="insulin">
+</div>
+
+<div class="input-group">
+<label>IMC</label>
+<input type="number" id="bmi">
+</div>
+
+<div class="input-group">
+<label>Diabetes Pedigree Function</label>
+<input type="number" step="0.01" id="dpf">
+</div>
+
+<div class="input-group">
+<label>Edad</label>
+<input type="number" id="age">
+</div>
+
+<button onclick="calcularRiesgo()">Calcular Riesgo</button>
+
+<div id="resultado" class="resultado"></div>
+
+<div class="footer">
+Sistema académico – No sustituye diagnóstico médico
+</div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
