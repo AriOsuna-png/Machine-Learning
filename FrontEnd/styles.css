@@ -1,124 +1,163 @@
 body{
-font-family: Arial;
-background: linear-gradient(135deg,#2e4155,#4ca1af);
+
+margin:0;
+font-family:Arial;
+
+background:linear-gradient(to right,#3c5a6b,#5ca9b3);
+
 display:flex;
 justify-content:center;
 align-items:center;
-height:100vh;
-margin:0;
+
+min-height:100vh;
+
 }
 
 .app{
+
 background:white;
-width:380px;
+
 padding:30px;
-border-radius:15px;
-box-shadow:0 10px 30px rgba(0,0,0,0.2);
+
+border-radius:10px;
+
+width:90%;
+max-width:450px;
+
+box-shadow:0 0 15px rgba(0,0,0,0.2);
+
 }
 
 .header{
+
 text-align:center;
 margin-bottom:20px;
-}
 
-.header h1{
-margin:0;
-color:#2c3e50;
-}
-
-.header p{
-font-size:13px;
-color:gray;
 }
 
 .input-group{
-margin-top:12px;
+
+margin-bottom:15px;
+
 }
 
 label{
+
 font-weight:bold;
-font-size:14px;
+
+display:flex;
+align-items:center;
+gap:5px;
+
 }
 
 input{
+
 width:100%;
-padding:9px;
+
+padding:8px;
+
 margin-top:5px;
-border-radius:6px;
+
+border-radius:5px;
+
 border:1px solid #ccc;
+
 }
 
 button{
-margin-top:20px;
+
 width:100%;
-padding:12px;
-background:#3498db;
+
+padding:10px;
+
+background:#3b8ed0;
+
 border:none;
+
 color:white;
+
+border-radius:5px;
+
 font-size:16px;
-border-radius:8px;
+
 cursor:pointer;
-transition:0.2s;
+
 }
 
 button:hover{
-background:#2980b9;
+
+background:#2f6fa7;
+
 }
 
 .resultado{
+
 margin-top:20px;
-text-align:center;
-font-size:18px;
+
 font-weight:bold;
+
+text-align:center;
+
 }
 
 .footer{
+
 margin-top:20px;
-font-size:11px;
+
+font-size:12px;
+
 text-align:center;
+
 color:gray;
-}
 
-.campo{
-display:flex;
-align-items:center;
-gap:10px;
-}
-
-.info{
-font-size:11px;
-color:#666;
-width:140px;
 }
 
 .tooltip{
-position: relative;
-display: inline-block;
-cursor: pointer;
-margin-left:6px;
-color:#3498db;
-font-weight:bold;
+
+position:relative;
+
+cursor:pointer;
+
 }
 
 .tooltiptext{
-visibility: hidden;
-width: 220px;
-background-color: #333;
-color: white;
-text-align: center;
-border-radius: 6px;
-padding: 6px;
-position: absolute;
-z-index: 1;
-bottom: 130%;
-left: 50%;
-transform: translateX(-50%);
-opacity: 0;
-transition: opacity 0.3s;
+
+visibility:hidden;
+
+width:200px;
+
+background:#333;
+
+color:#fff;
+
+text-align:center;
+
+padding:5px;
+
+border-radius:6px;
+
+position:absolute;
+
+z-index:1;
+
+bottom:125%;
+
+left:50%;
+
+transform:translateX(-50%);
+
+opacity:0;
+
+transition:opacity 0.3s;
+
 font-size:12px;
+
 }
 
 .tooltip:hover .tooltiptext{
-visibility: visible;
-opacity: 1;
+
+visibility:visible;
+opacity:1;
+
 }

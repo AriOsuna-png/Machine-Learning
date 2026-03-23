@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import joblib
 import numpy as np
 import os
@@ -22,6 +23,14 @@ model = joblib.load(model_path)
 @app.get("/")
 def home():
     return {"mensaje": "API de predicción de diabetes funcionando"}
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ==============================
 # ENDPOINT DE PREDICCIÓN
@@ -61,9 +70,9 @@ def predict(data: dict):
         probability = float(probability)
         probability = round(probability, 4)
 
-        if probability < 0.3:
+        if probability < 0.2:
             riesgo = "Bajo riesgo de diabetes"
-        elif probability < 0.7:
+        elif probability < 0.5:
             riesgo = "Riesgo moderado de diabetes"
         else:
             riesgo = "Alto riesgo de diabetes"
