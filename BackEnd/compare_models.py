@@ -43,7 +43,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # ==============================
-# 3. CREAR PIPELINES (IMPORTANTE)
+# 3. CREAR PIPELINES 
 # ==============================
 
 models = {
