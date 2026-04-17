@@ -70,7 +70,7 @@ models = {
 }
 
 # ==============================
-# 4. VALIDACIÓN CRUZADA
+# 4. VALIDACIÓN CRUZAA
 # ==============================
 
 scoring = ['accuracy', 'precision', 'recall', 'f1']
