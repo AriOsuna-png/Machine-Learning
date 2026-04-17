@@ -109,7 +109,7 @@ best_model = models[best_model_name]
 print(f"\n🏆 Modelo seleccionado (según Recall promedio): {best_model_name}")
 
 # ==============================
-# 6. ENTRENAR MEJOR MODELO CON TODO EL TRAIN
+# 6. ENTRENAR MEJOR MODELO CON TODO EL TRAINING
 # ==============================
 
 best_model.fit(X_train, y_train)
