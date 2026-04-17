@@ -52,7 +52,7 @@ catch(error){
 
 document.getElementById("resultado").innerHTML =
 
-"Error al conectar con el servidor.";
+"Error al conectar con el servidor";
 
 }
 
