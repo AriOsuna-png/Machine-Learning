@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import joblib
 import os
-
+from sklearn.calibration import CalibratedClassifierCV
 from sklearn.model_selection import train_test_split, cross_validate
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
@@ -102,19 +102,21 @@ for name, model in models.items():
 # ==============================
 # 5. SELECCIÓN DEL MEJOR MODELO
 # ==============================
-
 best_model_name = max(results, key=results.get)
 best_model = models[best_model_name]
 
 print(f"\n🏆 Modelo seleccionado (según Recall promedio): {best_model_name}")
 
 # ==============================
-# 6. ENTRENAR MEJOR MODELO CON TODO EL TRAINING
+# 6. ENTRENAR Y CALIBRAR MEJOR MODELO
 # ==============================
-
 best_model.fit(X_train, y_train)
 
-y_pred = best_model.predict(X_test)
+# Calibrar probabilidades con isotonic regression
+calibrated_model = CalibratedClassifierCV(best_model, method='isotonic', cv=5)
+calibrated_model.fit(X_train, y_train)
+
+y_pred = calibrated_model.predict(X_test)
 
 print("\n========== EVALUACIÓN FINAL EN TEST ==========\n")
 print(classification_report(y_test, y_pred))
@@ -122,15 +124,10 @@ print("Matriz de Confusión:")
 print(confusion_matrix(y_test, y_pred))
 
 # ==============================
-# 7. GUARDAR MODELO GANADOR
+# 7. GUARDAR MODELO GANADOR (CALIBRADO)
 # ==============================
-
-
 current_dir = os.path.dirname(os.path.abspath(__file__))
 model_path = os.path.join(current_dir, "best_model.pkl")
-
-joblib.dump(best_model, model_path)
-
-print("\nModelo guardado en:", model_path)
-
+joblib.dump(calibrated_model, model_path)
+print("\nModelo calibrado guardado en:", model_path)
 print("\nModelo guardado como 'best_model.pkl'")
