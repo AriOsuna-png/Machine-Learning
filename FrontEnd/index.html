@@ -2,118 +2,137 @@
 <html lang="es">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Diabetes Predictor</title>
-
 <link rel="stylesheet" href="styles.css">
-
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
 <div class="app">
 
-<div class="header">
-<h1>Diabetes Predictor</h1>
-<p>Sistema basado en Machine Learning</p>
-</div>
+  <div class="header">
+    <div class="header-icon">🩺</div>
+    <h1>Diabetes Predictor</h1>
+    <p>Sistema basado en Machine Learning</p>
+  </div>
 
+  <div class="form-grid">
 
-<div class="input-group">
-<label>Embarazos
-<span class="tooltip">ⓘ
-<span class="tooltiptext">Número total de embarazos registrados en el historial clínico del paciente.</span>
-</span>
-</label>
-<input type="number" id="pregnancies">
-</div>
+    <div class="input-group">
+      <label>Embarazos
+        <span class="tooltip">ⓘ
+          <span class="tooltiptext">Número total de embarazos registrados en el historial clínico del paciente.</span>
+        </span>
+      </label>
+      <input type="number" id="pregnancies" placeholder="0">
+    </div>
 
+    <div class="input-group">
+      <label>Glucosa
+        <span class="tooltip">ⓘ
+          <span class="tooltiptext">Nivel de glucosa en sangre obtenido mediante análisis clínico.</span>
+        </span>
+      </label>
+      <input type="number" id="glucose" placeholder="mg/dL">
+    </div>
 
-<div class="input-group">
-<label>Glucosa
-<span class="tooltip">ⓘ
-<span class="tooltiptext">Nivel de glucosa en sangre obtenido mediante análisis clínico.</span>
-</span>
-</label>
-<input type="number" id="glucose">
-</div>
+    <div class="input-group">
+      <label>Presión arterial
+        <span class="tooltip">ⓘ
+          <span class="tooltiptext">Medición de presión sanguínea obtenida con un tensiómetro.</span>
+        </span>
+      </label>
+      <input type="number" id="blood_pressure" placeholder="mmHg">
+    </div>
 
+    <div class="input-group">
+      <label>Grosor de piel
+        <span class="tooltip">ⓘ
+          <span class="tooltiptext">Medición del pliegue cutáneo usada para estimar grasa corporal.</span>
+        </span>
+      </label>
+      <input type="number" id="skin_thickness" placeholder="mm">
+    </div>
 
-<div class="input-group">
-<label>Presión arterial
-<span class="tooltip">ⓘ
-<span class="tooltiptext">Medición de presión sanguínea obtenida con un tensiómetro.</span>
-</span>
-</label>
-<input type="number" id="blood_pressure">
-</div>
+    <div class="input-group">
+      <label>Insulina
+        <span class="tooltip">ⓘ
+          <span class="tooltiptext">Nivel de insulina en sangre medido mediante análisis clínico.</span>
+        </span>
+      </label>
+      <input type="number" id="insulin" placeholder="μU/mL">
+    </div>
 
+    <div class="input-group">
+      <label>IMC
+        <span class="tooltip">ⓘ
+          <span class="tooltiptext">Índice de masa corporal calculado a partir de peso y altura.</span>
+        </span>
+      </label>
+      <input type="number" id="bmi" placeholder="kg/m²">
+    </div>
 
-<div class="input-group">
-<label>Grosor de piel (Skin Thickness)
-<span class="tooltip">ⓘ
-<span class="tooltiptext">Medición del pliegue cutáneo usada para estimar grasa corporal.</span>
-</span>
-</label>
-<input type="number" id="skin_thickness">
-</div>
+    <div class="input-group">
+      <label>Historial familiar (DPF)
+        <span class="tooltip">ⓘ
+          <span class="tooltiptext">Indicador estadístico del historial familiar de diabetes.</span>
+        </span>
+      </label>
+      <input type="number" step="0.01" id="dpf" placeholder="0.00">
+    </div>
 
+    <div class="input-group">
+      <label>Edad
+        <span class="tooltip">ⓘ
+          <span class="tooltiptext">Edad del paciente en años.</span>
+        </span>
+      </label>
+      <input type="number" id="age" placeholder="años">
+    </div>
 
-<div class="input-group">
-<label>Insulina
-<span class="tooltip">ⓘ
-<span class="tooltiptext">Nivel de insulina en sangre medido mediante análisis clínico.</span>
-</span>
-</label>
-<input type="number" id="insulin">
-</div>
+  </div>
 
+  <button onclick="calcularRiesgo()" id="btn-calcular">
+    <span class="btn-text">Calcular Riesgo</span>
+    <span class="btn-spinner" style="display:none">Analizando...</span>
+  </button>
 
-<div class="input-group">
-<label>IMC
-<span class="tooltip">ⓘ
-<span class="tooltiptext">Índice de masa corporal calculado a partir de peso y altura.</span>
-</span>
-</label>
-<input type="number" id="bmi">
-</div>
+  <!-- Resultado principal -->
+  <div id="resultado" class="resultado" style="display:none">
+    <div class="resultado-header">
+      <div class="resultado-icono" id="resultado-icono"></div>
+      <div>
+        <div class="resultado-porcentaje" id="resultado-porcentaje"></div>
+        <div class="resultado-riesgo" id="resultado-riesgo"></div>
+      </div>
+    </div>
+    <div class="barra-contenedor">
+      <div class="barra-fondo">
+        <div class="barra-progreso" id="barra-progreso"></div>
+      </div>
+      <div class="barra-etiquetas">
+        <span>Bajo</span>
+        <span>Moderado</span>
+        <span>Alto</span>
+      </div>
+    </div>
+  </div>
 
+  <!-- Explicación por variable -->
+  <div id="explicacion-contenedor" style="display:none">
+    <div class="explicacion-titulo">📊 Análisis por factor</div>
+    <div id="explicacion-lista"></div>
+  </div>
 
-<div class="input-group">
-<label>Historial familiar (DPF)
-<span class="tooltip">ⓘ
-<span class="tooltiptext">Indicador estadístico del historial familiar de diabetes.</span>
-</span>
-</label>
-<input type="number" step="0.01" id="dpf">
-</div>
-
-
-<div class="input-group">
-<label>Edad
-<span class="tooltip">ⓘ
-<span class="tooltiptext">Edad del paciente en años.</span>
-</span>
-</label>
-<input type="number" id="age">
-</div>
-
-
-<button onclick="calcularRiesgo()">Calcular Riesgo</button>
-
-<div id="resultado" class="resultado"></div>
-
-
-<div class="footer">
-Sistema académico – No sustituye diagnóstico médico
-</div>
+  <div class="footer">
+    Sistema académico – No sustituye diagnóstico médico
+  </div>
 
 </div>
 
 <script src="script.js"></script>
-
 </body>
 </html>
