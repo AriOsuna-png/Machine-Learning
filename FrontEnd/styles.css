@@ -98,7 +98,6 @@ input[type="number"]::placeholder {
   font-size: 12px;
 }
 
-/* Estado de error en el input */
 input[type="number"].input-error {
   border-color: #eb5757;
   background: #fff8f8;
@@ -109,7 +108,6 @@ input[type="number"].input-error:focus {
   box-shadow: 0 0 0 3px rgba(235, 87, 87, 0.12);
 }
 
-/* Mensaje de error debajo del input */
 .error-msg {
   font-size: 11px;
   color: #eb5757;
@@ -120,7 +118,7 @@ input[type="number"].input-error:focus {
 }
 
 /* ==============================
-   BUTTON
+   BUTTONS
 ============================== */
 button {
   width: 100%;
@@ -190,10 +188,7 @@ button:disabled {
   font-weight: 500;
 }
 
-/* Barra de progreso */
-.barra-contenedor {
-  margin-top: 4px;
-}
+.barra-contenedor { margin-top: 4px; }
 
 .barra-fondo {
   background: #e8f0f3;
@@ -279,6 +274,155 @@ button:disabled {
   font-size: 12.5px;
   color: #5a7a88;
   line-height: 1.5;
+}
+
+/* ==============================
+   HISTORIAL DE PREDICCIONES
+============================== */
+#historial-contenedor {
+  margin-top: 28px;
+  border-top: 2px solid #e8f0f3;
+  padding-top: 18px;
+}
+
+.historial-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.historial-titulo {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1e3a47;
+}
+
+.btn-limpiar {
+  width: auto;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: none;
+  color: #a0b8c2;
+  border: 1.5px solid #d0dde3;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  letter-spacing: 0;
+  transform: none;
+}
+
+.btn-limpiar:hover {
+  color: #eb5757;
+  border-color: #eb5757;
+  opacity: 1;
+  transform: none;
+}
+
+/* Cada fila del historial */
+.historial-fila {
+  border-radius: 10px;
+  padding: 11px 13px;
+  margin-bottom: 8px;
+  border-left: 4px solid transparent;
+  animation: slideIn 0.3s ease both;
+}
+
+.historial-bajo     { background: #f6fdf8; border-left-color: #6fcf97; }
+.historial-moderado { background: #fffcf5; border-left-color: #f2994a; }
+.historial-alto     { background: #fff8f8; border-left-color: #eb5757; }
+
+.historial-fila-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 7px;
+}
+
+.historial-resultado-grupo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.historial-icono {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.historial-porcentaje {
+  font-family: 'DM Mono', monospace;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1e3a47;
+}
+
+.historial-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+
+.historial-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.historial-fecha {
+  font-size: 11px;
+  color: #a0b8c2;
+  font-weight: 500;
+}
+
+.historial-hora {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: #a0b8c2;
+}
+
+/* Botón de cargar valores */
+.btn-cargar {
+  width: auto;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  background: white;
+  color: #5ca9b3;
+  border: 1.5px solid #5ca9b3;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  letter-spacing: 0;
+  transform: none;
+}
+
+.btn-cargar:hover {
+  background: #5ca9b3;
+  color: white;
+  opacity: 1;
+  transform: none;
+}
+
+/* Valores resumidos en la fila */
+.historial-valores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+}
+
+.historial-valores span {
+  font-size: 11px;
+  color: #7a9aaa;
+}
+
+.historial-valores strong {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: #2d4f5e;
+  font-weight: 500;
 }
 
 /* ==============================

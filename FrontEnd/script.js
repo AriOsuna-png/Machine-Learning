@@ -25,14 +25,124 @@ const MAPA_IDS = {
 };
 
 // ==============================
-// VALIDACIÓN EN VIVO (mientras el usuario escribe)
+// HISTORIAL (en memoria — se reinicia al cerrar la pestaña)
+// ==============================
+let historial = [];
+const MAX_HISTORIAL = 20;
+
+function guardarEnHistorial(data, resultado) {
+  const entrada = {
+    id:          Date.now(),
+    timestamp:   new Date(),
+    inputs:      { ...data },
+    porcentaje:  (resultado.probability * 100).toFixed(1),
+    nivel:       resultado.probability >= 0.5 ? "alto"
+                 : resultado.probability >= 0.2 ? "moderado"
+                 : "bajo",
+    riesgo:      resultado.risk || "—",
+  };
+
+  historial.unshift(entrada);          // más reciente primero
+  if (historial.length > MAX_HISTORIAL) historial.pop();
+
+  renderHistorial();
+}
+
+function renderHistorial() {
+  const contenedor = document.getElementById("historial-contenedor");
+  const lista      = document.getElementById("historial-lista");
+
+  if (historial.length === 0) {
+    contenedor.style.display = "none";
+    return;
+  }
+
+  contenedor.style.display = "block";
+  lista.innerHTML = "";
+
+  historial.forEach((entrada, index) => {
+    const hora = entrada.timestamp.toLocaleTimeString("es-MX", {
+      hour: "2-digit", minute: "2-digit", second: "2-digit"
+    });
+    const fecha = entrada.timestamp.toLocaleDateString("es-MX", {
+      day: "2-digit", month: "short"
+    });
+
+    const iconos = { bajo: "✅", moderado: "🔶", alto: "⚠️" };
+    const icono  = iconos[entrada.nivel] || "—";
+
+    const fila = document.createElement("div");
+    fila.className = `historial-fila historial-${entrada.nivel}`;
+    fila.style.animationDelay = `${index * 0.04}s`;
+
+    fila.innerHTML = `
+      <div class="historial-fila-top">
+        <div class="historial-resultado-grupo">
+          <span class="historial-icono">${icono}</span>
+          <span class="historial-porcentaje">${entrada.porcentaje}%</span>
+          <span class="historial-badge badge-${entrada.nivel}">${entrada.nivel.charAt(0).toUpperCase() + entrada.nivel.slice(1)}</span>
+        </div>
+        <div class="historial-meta">
+          <span class="historial-fecha">${fecha}</span>
+          <span class="historial-hora">${hora}</span>
+          <button class="btn-cargar" onclick="cargarDesdeHistorial(${entrada.id})" title="Cargar estos valores en el formulario">↩ Cargar</button>
+        </div>
+      </div>
+      <div class="historial-valores">
+        <span>G: <strong>${entrada.inputs.glucose}</strong></span>
+        <span>PA: <strong>${entrada.inputs.blood_pressure}</strong></span>
+        <span>IMC: <strong>${entrada.inputs.bmi}</strong></span>
+        <span>Ins: <strong>${entrada.inputs.insulin}</strong></span>
+        <span>Edad: <strong>${entrada.inputs.age}</strong></span>
+        <span>DPF: <strong>${entrada.inputs.diabetes_pedigree_function}</strong></span>
+      </div>
+    `;
+
+    lista.appendChild(fila);
+  });
+}
+
+function cargarDesdeHistorial(id) {
+  const entrada = historial.find(e => e.id === id);
+  if (!entrada) return;
+
+  // Mapeo inverso: clave del objeto data → id del input en el DOM
+  const camposDom = {
+    pregnancies:                "pregnancies",
+    glucose:                    "glucose",
+    blood_pressure:             "blood_pressure",
+    skin_thickness:             "skin_thickness",
+    insulin:                    "insulin",
+    bmi:                        "bmi",
+    diabetes_pedigree_function: "dpf",
+    age:                        "age",
+  };
+
+  for (const [clave, domId] of Object.entries(camposDom)) {
+    const input = document.getElementById(domId);
+    if (input) {
+      input.value = entrada.inputs[clave];
+      limpiarError(domId);
+    }
+  }
+
+  // Scroll al formulario
+  document.querySelector(".form-grid").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function limpiarHistorial() {
+  historial = [];
+  renderHistorial();
+}
+
+// ==============================
+// VALIDACIÓN EN VIVO
 // ==============================
 function validarCampoEnVivo(campoId) {
   const input = document.getElementById(campoId);
   const valor = parseFloat(input.value);
   const rango = RANGOS[campoId];
 
-  // Campo vacío: sin error aún (no molestar mientras escribe)
   if (input.value === "") {
     limpiarError(campoId);
     return true;
@@ -45,10 +155,7 @@ function validarCampoEnVivo(campoId) {
 
   if (valor < rango.min || valor > rango.max) {
     const unidad = rango.unidad ? ` ${rango.unidad}` : "";
-    mostrarErrorCampo(
-      campoId,
-      `Valor fuera de rango clínico (${rango.min}–${rango.max}${unidad}).`
-    );
+    mostrarErrorCampo(campoId, `Valor fuera de rango clínico (${rango.min}–${rango.max}${unidad}).`);
     return false;
   }
 
@@ -68,7 +175,6 @@ function validarTodos(data) {
     const rango = RANGOS[campoId];
     const input = document.getElementById(campoId);
 
-    // Campo vacío
     if (input.value === "" || input.value === null) {
       mostrarErrorCampo(campoId, "Este campo es obligatorio.");
       if (!primerCampoConError) primerCampoConError = input;
@@ -85,10 +191,7 @@ function validarTodos(data) {
 
     if (valor < rango.min || valor > rango.max) {
       const unidad = rango.unidad ? ` ${rango.unidad}` : "";
-      mostrarErrorCampo(
-        campoId,
-        `Valor fuera de rango clínico (${rango.min}–${rango.max}${unidad}).`
-      );
+      mostrarErrorCampo(campoId, `Valor fuera de rango clínico (${rango.min}–${rango.max}${unidad}).`);
       if (!primerCampoConError) primerCampoConError = input;
       valido = false;
     } else {
@@ -96,7 +199,6 @@ function validarTodos(data) {
     }
   }
 
-  // Scroll al primer campo con error
   if (primerCampoConError) {
     primerCampoConError.scrollIntoView({ behavior: "smooth", block: "center" });
     primerCampoConError.focus();
@@ -134,16 +236,13 @@ async function calcularRiesgo() {
     age:                        parseFloat(document.getElementById("age").value),
   };
 
-  // ── VALIDACIÓN ANTES DE ENVIAR ──
   if (!validarTodos(data)) return;
 
-  // Mostrar estado de carga
   const btn = document.getElementById("btn-calcular");
   btn.querySelector(".btn-text").style.display = "none";
   btn.querySelector(".btn-spinner").style.display = "inline";
   btn.disabled = true;
 
-  // Ocultar resultados anteriores
   document.getElementById("resultado").style.display = "none";
   document.getElementById("explicacion-contenedor").style.display = "none";
 
@@ -162,20 +261,14 @@ async function calcularRiesgo() {
     }
 
     const porcentaje = result.probability ? (result.probability * 100).toFixed(1) : 0;
-    const riesgo = result.risk || "No disponible";
+    const riesgo     = result.risk || "No disponible";
 
-    // Determinar nivel de riesgo
     let nivel = "bajo";
     let icono = "✅";
-    if (result.probability >= 0.5) {
-      nivel = "alto";
-      icono = "⚠️";
-    } else if (result.probability >= 0.2) {
-      nivel = "moderado";
-      icono = "🔶";
-    }
+    if (result.probability >= 0.5) { nivel = "alto";     icono = "⚠️"; }
+    else if (result.probability >= 0.2) { nivel = "moderado"; icono = "🔶"; }
 
-    // Mostrar resultado principal
+    // Resultado principal
     const resultadoDiv = document.getElementById("resultado");
     resultadoDiv.style.display = "block";
     resultadoDiv.className = `resultado riesgo-${nivel}`;
@@ -184,15 +277,12 @@ async function calcularRiesgo() {
     document.getElementById("resultado-porcentaje").textContent = `${porcentaje}% de probabilidad`;
     document.getElementById("resultado-riesgo").textContent = riesgo;
 
-    // Barra de progreso animada
     const barra = document.getElementById("barra-progreso");
     barra.style.width = "0%";
     barra.className = `barra-progreso barra-${nivel}`;
-    setTimeout(() => {
-      barra.style.width = `${porcentaje}%`;
-    }, 50);
+    setTimeout(() => { barra.style.width = `${porcentaje}%`; }, 50);
 
-    // Mostrar explicación por factor
+    // Análisis por factor
     if (result.explicacion && result.explicacion.length > 0) {
       const lista = document.getElementById("explicacion-lista");
       lista.innerHTML = "";
@@ -221,7 +311,9 @@ async function calcularRiesgo() {
       document.getElementById("explicacion-contenedor").style.display = "block";
     }
 
-    // Scroll suave al resultado
+    // ── GUARDAR EN HISTORIAL ──
+    guardarEnHistorial(data, result);
+
     resultadoDiv.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
   } catch (error) {
