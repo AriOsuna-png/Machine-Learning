@@ -2,11 +2,11 @@
 <html lang="es">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diabetes Predictor</title>
-<link rel="stylesheet" href="styles.css">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diabetes Predictor</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -24,73 +24,89 @@
     <div class="input-group">
       <label>Embarazos
         <span class="tooltip">ⓘ
-          <span class="tooltiptext">Número total de embarazos registrados en el historial clínico del paciente.</span>
+          <span class="tooltiptext">Número total de embarazos registrados en el historial clínico del paciente. Rango válido: 0–17.</span>
         </span>
       </label>
-      <input type="number" id="pregnancies" placeholder="0">
+      <input type="number" id="pregnancies" placeholder="0" min="0" max="17" step="1"
+             oninput="validarCampoEnVivo('pregnancies')">
+      <span class="error-msg" id="err-pregnancies"></span>
     </div>
 
     <div class="input-group">
       <label>Glucosa
         <span class="tooltip">ⓘ
-          <span class="tooltiptext">Nivel de glucosa en sangre obtenido mediante análisis clínico.</span>
+          <span class="tooltiptext">Nivel de glucosa en sangre (mg/dL). Normal: &lt;100 · Prediabetes: 100–139 · Diabetes: ≥140. Rango válido: 44–199.</span>
         </span>
       </label>
-      <input type="number" id="glucose" placeholder="mg/dL">
+      <input type="number" id="glucose" placeholder="mg/dL" min="44" max="199" step="1"
+             oninput="validarCampoEnVivo('glucose')">
+      <span class="error-msg" id="err-glucose"></span>
     </div>
 
     <div class="input-group">
       <label>Presión arterial
         <span class="tooltip">ⓘ
-          <span class="tooltiptext">Medición de presión sanguínea obtenida con un tensiómetro.</span>
+          <span class="tooltiptext">Presión diastólica (mmHg). Normal: &lt;80 · Límite: 80–89 · Alta: ≥90. Rango válido: 24–122.</span>
         </span>
       </label>
-      <input type="number" id="blood_pressure" placeholder="mmHg">
+      <input type="number" id="blood_pressure" placeholder="mmHg" min="24" max="122" step="1"
+             oninput="validarCampoEnVivo('blood_pressure')">
+      <span class="error-msg" id="err-blood_pressure"></span>
     </div>
 
     <div class="input-group">
       <label>Grosor de piel
         <span class="tooltip">ⓘ
-          <span class="tooltiptext">Medición del pliegue cutáneo usada para estimar grasa corporal.</span>
+          <span class="tooltiptext">Grosor del pliegue cutáneo del tríceps (mm). Rango válido: 7–99.</span>
         </span>
       </label>
-      <input type="number" id="skin_thickness" placeholder="mm">
+      <input type="number" id="skin_thickness" placeholder="mm" min="7" max="99" step="1"
+             oninput="validarCampoEnVivo('skin_thickness')">
+      <span class="error-msg" id="err-skin_thickness"></span>
     </div>
 
     <div class="input-group">
       <label>Insulina
         <span class="tooltip">ⓘ
-          <span class="tooltiptext">Nivel de insulina en sangre medido mediante análisis clínico.</span>
+          <span class="tooltiptext">Nivel de insulina en sangre (μU/mL). Normal en ayunas: &lt;100. Rango válido: 14–846.</span>
         </span>
       </label>
-      <input type="number" id="insulin" placeholder="μU/mL">
+      <input type="number" id="insulin" placeholder="μU/mL" min="14" max="846" step="1"
+             oninput="validarCampoEnVivo('insulin')">
+      <span class="error-msg" id="err-insulin"></span>
     </div>
 
     <div class="input-group">
       <label>IMC
         <span class="tooltip">ⓘ
-          <span class="tooltiptext">Índice de masa corporal calculado a partir de peso y altura.</span>
+          <span class="tooltiptext">Índice de Masa Corporal (kg/m²). Saludable: &lt;25 · Sobrepeso: 25–29.9 · Obesidad: ≥30. Rango válido: 18–67.</span>
         </span>
       </label>
-      <input type="number" id="bmi" placeholder="kg/m²">
+      <input type="number" id="bmi" placeholder="kg/m²" min="18" max="67" step="0.1"
+             oninput="validarCampoEnVivo('bmi')">
+      <span class="error-msg" id="err-bmi"></span>
     </div>
 
     <div class="input-group">
       <label>Historial familiar (DPF)
         <span class="tooltip">ⓘ
-          <span class="tooltiptext">Indicador estadístico del historial familiar de diabetes.</span>
+          <span class="tooltiptext">Diabetes Pedigree Function: carga genética familiar. Bajo: &lt;0.4 · Moderado: 0.4–0.79 · Alto: ≥0.8. Rango válido: 0.07–2.42.</span>
         </span>
       </label>
-      <input type="number" step="0.01" id="dpf" placeholder="0.00">
+      <input type="number" id="dpf" placeholder="0.00" min="0.07" max="2.42" step="0.01"
+             oninput="validarCampoEnVivo('dpf')">
+      <span class="error-msg" id="err-dpf"></span>
     </div>
 
     <div class="input-group">
       <label>Edad
         <span class="tooltip">ⓘ
-          <span class="tooltiptext">Edad del paciente en años.</span>
+          <span class="tooltiptext">Edad del paciente en años. Riesgo aumenta a partir de los 45 años. Rango válido: 21–81.</span>
         </span>
       </label>
-      <input type="number" id="age" placeholder="años">
+      <input type="number" id="age" placeholder="años" min="21" max="81" step="1"
+             oninput="validarCampoEnVivo('age')">
+      <span class="error-msg" id="err-age"></span>
     </div>
 
   </div>
