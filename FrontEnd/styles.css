@@ -51,6 +51,64 @@ body {
 }
 
 /* ==============================
+   IDENTIFICADOR DE PACIENTE
+============================== */
+.paciente-grupo {
+  margin-bottom: 18px;
+}
+
+.paciente-grupo label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #2d4f5e;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 6px;
+}
+
+.opcional {
+  font-weight: 400;
+  font-size: 11px;
+  color: #a0b8c2;
+}
+
+.paciente-grupo input[type="text"] {
+  width: 100%;
+  padding: 9px 11px;
+  border-radius: 8px;
+  border: 1.5px solid #d0dde3;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  background: #f8fbfc;
+  color: #1e3a47;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.paciente-grupo input[type="text"]:focus {
+  outline: none;
+  border-color: #5ca9b3;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(92, 169, 179, 0.12);
+}
+
+.paciente-grupo input[type="text"]::placeholder {
+  color: #b0c4cc;
+  font-size: 12px;
+}
+
+/* Etiqueta de paciente en cada fila del historial */
+.historial-paciente {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2d4f5e;
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==============================
    FORM
 ============================== */
 .form-grid {

@@ -31,9 +31,11 @@ let historial = [];
 const MAX_HISTORIAL = 20;
 
 function guardarEnHistorial(data, resultado) {
+  const pacienteId = document.getElementById("paciente-id").value.trim();
   const entrada = {
     id:          Date.now(),
     timestamp:   new Date(),
+    paciente:    pacienteId || null,
     inputs:      { ...data },
     porcentaje:  (resultado.probability * 100).toFixed(1),
     nivel:       resultado.probability >= 0.5 ? "alto"
@@ -88,6 +90,7 @@ function renderHistorial() {
           <button class="btn-cargar" onclick="cargarDesdeHistorial(${entrada.id})" title="Cargar estos valores en el formulario">↩ Cargar</button>
         </div>
       </div>
+      ${entrada.paciente ? `<div class="historial-paciente">👤 ${entrada.paciente}</div>` : ""}
       <div class="historial-valores">
         <span>G: <strong>${entrada.inputs.glucose}</strong></span>
         <span>PA: <strong>${entrada.inputs.blood_pressure}</strong></span>
@@ -125,6 +128,9 @@ function cargarDesdeHistorial(id) {
       limpiarError(domId);
     }
   }
+
+  // Restaurar identificador de paciente
+  document.getElementById("paciente-id").value = entrada.paciente || "";
 
   // Scroll al formulario
   document.querySelector(".form-grid").scrollIntoView({ behavior: "smooth", block: "start" });
