@@ -136,6 +136,61 @@ function cargarDesdeHistorial(id) {
   document.querySelector(".form-grid").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+function exportarCSV() {
+  if (historial.length === 0) return;
+
+  const encabezados = [
+    "Paciente",
+    "Fecha",
+    "Hora",
+    "Embarazos",
+    "Glucosa (mg/dL)",
+    "Presión Arterial (mmHg)",
+    "Grosor Piel (mm)",
+    "Insulina (μU/mL)",
+    "IMC (kg/m²)",
+    "DPF",
+    "Edad",
+    "Probabilidad (%)",
+    "Nivel de Riesgo",
+    "Diagnóstico"
+  ];
+
+  const filas = historial.map(e => {
+    const fecha = e.timestamp.toLocaleDateString("es-MX", { day: "2-digit", month: "2-digit", year: "numeric" });
+    const hora  = e.timestamp.toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+
+    return [
+      e.paciente || "",
+      fecha,
+      hora,
+      e.inputs.pregnancies,
+      e.inputs.glucose,
+      e.inputs.blood_pressure,
+      e.inputs.skin_thickness,
+      e.inputs.insulin,
+      e.inputs.bmi,
+      e.inputs.diabetes_pedigree_function,
+      e.inputs.age,
+      e.porcentaje,
+      e.nivel.charAt(0).toUpperCase() + e.nivel.slice(1),
+      e.riesgo
+    ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(",");
+  });
+
+  const csv     = [encabezados.join(","), ...filas].join("\n");
+  const blob    = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" }); // BOM para Excel
+  const url     = URL.createObjectURL(blob);
+  const link    = document.createElement("a");
+  const ahora   = new Date();
+  const sufijo  = `${ahora.getFullYear()}${String(ahora.getMonth()+1).padStart(2,"0")}${String(ahora.getDate()).padStart(2,"0")}_${String(ahora.getHours()).padStart(2,"0")}${String(ahora.getMinutes()).padStart(2,"0")}`;
+
+  link.href     = url;
+  link.download = `predicciones_diabetes_${sufijo}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 function limpiarHistorial() {
   historial = [];
   renderHistorial();

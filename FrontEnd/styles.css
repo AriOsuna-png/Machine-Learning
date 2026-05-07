@@ -356,6 +356,34 @@ button:disabled {
   color: #1e3a47;
 }
 
+.historial-acciones {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.btn-exportar {
+  width: auto;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: none;
+  color: #5ca9b3;
+  border: 1.5px solid #5ca9b3;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  letter-spacing: 0;
+  transform: none;
+}
+
+.btn-exportar:hover {
+  background: #5ca9b3;
+  color: white;
+  opacity: 1;
+  transform: none;
+}
+
 .btn-limpiar {
   width: auto;
   padding: 4px 12px;
