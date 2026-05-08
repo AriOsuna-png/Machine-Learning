@@ -1,4 +1,31 @@
 // ==============================
+// MODO OSCURO / CLARO
+// ==============================
+function toggleTema() {
+  const isDark = document.body.classList.toggle("dark");
+  localStorage.setItem("tema", isDark ? "dark" : "light");
+  document.getElementById("btn-tema").textContent = isDark ? "☀️" : "🌙";
+}
+
+// Aplicar tema guardado al cargar la página
+(function aplicarTemaGuardado() {
+  const temaGuardado = localStorage.getItem("tema");
+  // Si no hay preferencia guardada, detectar la del sistema operativo
+  const prefiereDark = temaGuardado
+    ? temaGuardado === "dark"
+    : window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+  if (prefiereDark) {
+    document.body.classList.add("dark");
+  }
+  // El ícono se actualiza después de que el DOM cargue
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("btn-tema").textContent =
+      document.body.classList.contains("dark") ? "☀️" : "🌙";
+  });
+})();
+
+// ==============================
 // CONFIGURACIÓN DE RANGOS CLÍNICOS
 // ==============================
 const RANGOS = {
@@ -131,9 +158,6 @@ function cargarDesdeHistorial(id) {
 
   // Restaurar identificador de paciente
   document.getElementById("paciente-id").value = entrada.paciente || "";
-
-  // Scroll al formulario
-  document.querySelector(".form-grid").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function exportarCSV() {
@@ -333,6 +357,7 @@ async function calcularRiesgo() {
     const resultadoDiv = document.getElementById("resultado");
     resultadoDiv.style.display = "block";
     resultadoDiv.className = `resultado riesgo-${nivel}`;
+    document.getElementById("resultado-vacio").style.display = "none";
 
     document.getElementById("resultado-icono").textContent = icono;
     document.getElementById("resultado-porcentaje").textContent = `${porcentaje}% de probabilidad`;
@@ -374,8 +399,6 @@ async function calcularRiesgo() {
 
     // ── GUARDAR EN HISTORIAL ──
     guardarEnHistorial(data, result);
-
-    resultadoDiv.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
   } catch (error) {
     mostrarError("Error al conectar con el servidor. Verifica que la API esté corriendo.");

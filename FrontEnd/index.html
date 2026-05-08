@@ -13,144 +13,174 @@
 
 <div class="app">
 
+  <!-- ==============================
+       HEADER
+  ============================== -->
   <div class="header">
-    <div class="header-icon">🩺</div>
-    <h1>Diabetes Predictor</h1>
-    <p>Sistema basado en Machine Learning</p>
-  </div>
-
-  <!-- Identificador de paciente -->
-  <div class="paciente-grupo">
-    <label for="paciente-id">👤 Identificador de paciente <span class="opcional">(opcional)</span></label>
-    <input type="text" id="paciente-id" placeholder="Ej: Juan Pérez · Exp. 00142 · Paciente 3…" maxlength="60">
-  </div>
-
-  <div class="form-grid">
-
-    <div class="input-group">
-      <label>Embarazos
-        <span class="tooltip">ⓘ
-          <span class="tooltiptext">Número total de embarazos registrados en el historial clínico del paciente. Rango válido: 0–17.</span>
-        </span>
-      </label>
-      <input type="number" id="pregnancies" placeholder="0" min="0" max="17" step="1"
-             oninput="validarCampoEnVivo('pregnancies')">
-      <span class="error-msg" id="err-pregnancies"></span>
-    </div>
-
-    <div class="input-group">
-      <label>Glucosa
-        <span class="tooltip">ⓘ
-          <span class="tooltiptext">Nivel de glucosa en sangre (mg/dL). Normal: &lt;100 · Prediabetes: 100–139 · Diabetes: ≥140. Rango válido: 44–199.</span>
-        </span>
-      </label>
-      <input type="number" id="glucose" placeholder="mg/dL" min="44" max="199" step="1"
-             oninput="validarCampoEnVivo('glucose')">
-      <span class="error-msg" id="err-glucose"></span>
-    </div>
-
-    <div class="input-group">
-      <label>Presión arterial
-        <span class="tooltip">ⓘ
-          <span class="tooltiptext">Presión diastólica (mmHg). Normal: &lt;80 · Límite: 80–89 · Alta: ≥90. Rango válido: 24–122.</span>
-        </span>
-      </label>
-      <input type="number" id="blood_pressure" placeholder="mmHg" min="24" max="122" step="1"
-             oninput="validarCampoEnVivo('blood_pressure')">
-      <span class="error-msg" id="err-blood_pressure"></span>
-    </div>
-
-    <div class="input-group">
-      <label>Grosor de piel
-        <span class="tooltip">ⓘ
-          <span class="tooltiptext">Grosor del pliegue cutáneo del tríceps (mm). Rango válido: 7–99.</span>
-        </span>
-      </label>
-      <input type="number" id="skin_thickness" placeholder="mm" min="7" max="99" step="1"
-             oninput="validarCampoEnVivo('skin_thickness')">
-      <span class="error-msg" id="err-skin_thickness"></span>
-    </div>
-
-    <div class="input-group">
-      <label>Insulina
-        <span class="tooltip">ⓘ
-          <span class="tooltiptext">Nivel de insulina en sangre (μU/mL). Normal en ayunas: &lt;100. Rango válido: 14–846.</span>
-        </span>
-      </label>
-      <input type="number" id="insulin" placeholder="μU/mL" min="14" max="846" step="1"
-             oninput="validarCampoEnVivo('insulin')">
-      <span class="error-msg" id="err-insulin"></span>
-    </div>
-
-    <div class="input-group">
-      <label>IMC
-        <span class="tooltip">ⓘ
-          <span class="tooltiptext">Índice de Masa Corporal (kg/m²). Saludable: &lt;25 · Sobrepeso: 25–29.9 · Obesidad: ≥30. Rango válido: 18–67.</span>
-        </span>
-      </label>
-      <input type="number" id="bmi" placeholder="kg/m²" min="18" max="67" step="0.1"
-             oninput="validarCampoEnVivo('bmi')">
-      <span class="error-msg" id="err-bmi"></span>
-    </div>
-
-    <div class="input-group">
-      <label>Historial familiar (DPF)
-        <span class="tooltip">ⓘ
-          <span class="tooltiptext">Diabetes Pedigree Function: carga genética familiar. Bajo: &lt;0.4 · Moderado: 0.4–0.79 · Alto: ≥0.8. Rango válido: 0.07–2.42.</span>
-        </span>
-      </label>
-      <input type="number" id="dpf" placeholder="0.00" min="0.07" max="2.42" step="0.01"
-             oninput="validarCampoEnVivo('dpf')">
-      <span class="error-msg" id="err-dpf"></span>
-    </div>
-
-    <div class="input-group">
-      <label>Edad
-        <span class="tooltip">ⓘ
-          <span class="tooltiptext">Edad del paciente en años. Riesgo aumenta a partir de los 45 años. Rango válido: 21–81.</span>
-        </span>
-      </label>
-      <input type="number" id="age" placeholder="años" min="21" max="81" step="1"
-             oninput="validarCampoEnVivo('age')">
-      <span class="error-msg" id="err-age"></span>
-    </div>
-
-  </div>
-
-  <button onclick="calcularRiesgo()" id="btn-calcular">
-    <span class="btn-text">Calcular Riesgo</span>
-    <span class="btn-spinner" style="display:none">Analizando...</span>
-  </button>
-
-  <!-- Resultado principal -->
-  <div id="resultado" class="resultado" style="display:none">
-    <div class="resultado-header">
-      <div class="resultado-icono" id="resultado-icono"></div>
+    <div class="header-left">
+      <span class="header-icon">🩺</span>
       <div>
-        <div class="resultado-porcentaje" id="resultado-porcentaje"></div>
-        <div class="resultado-riesgo" id="resultado-riesgo"></div>
+        <h1>Diabetes Predictor</h1>
+        <p>Sistema basado en Machine Learning</p>
       </div>
     </div>
-    <div class="barra-contenedor">
-      <div class="barra-fondo">
-        <div class="barra-progreso" id="barra-progreso"></div>
-      </div>
-      <div class="barra-etiquetas">
-        <span>Bajo</span>
-        <span>Moderado</span>
-        <span>Alto</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Explicación por variable -->
-  <div id="explicacion-contenedor" style="display:none">
-    <div class="explicacion-titulo">📊 Análisis por factor</div>
-    <div id="explicacion-lista"></div>
+    <button class="btn-tema" id="btn-tema" onclick="toggleTema()" title="Cambiar tema">🌙</button>
   </div>
 
   <!-- ==============================
-       HISTORIAL DE PREDICCIONES
+       LAYOUT PRINCIPAL: izquierda | derecha
+  ============================== -->
+  <div class="layout-principal">
+
+    <!-- COLUMNA IZQUIERDA: formulario -->
+    <div class="columna-form">
+
+      <div class="paciente-grupo">
+        <label for="paciente-id">👤 Identificador de paciente <span class="opcional">(opcional)</span></label>
+        <input type="text" id="paciente-id" placeholder="Ej: Juan Pérez · Exp. 00142 · Paciente 3…" maxlength="60">
+      </div>
+
+      <div class="form-grid">
+
+        <div class="input-group">
+          <label>Embarazos
+            <span class="tooltip">ⓘ
+              <span class="tooltiptext">Número total de embarazos registrados en el historial clínico del paciente. Rango válido: 0–17.</span>
+            </span>
+          </label>
+          <input type="number" id="pregnancies" placeholder="0" min="0" max="17" step="1"
+                 oninput="validarCampoEnVivo('pregnancies')">
+          <span class="error-msg" id="err-pregnancies"></span>
+        </div>
+
+        <div class="input-group">
+          <label>Glucosa
+            <span class="tooltip">ⓘ
+              <span class="tooltiptext">Nivel de glucosa en sangre (mg/dL). Normal: &lt;100 · Prediabetes: 100–139 · Diabetes: ≥140. Rango válido: 44–199.</span>
+            </span>
+          </label>
+          <input type="number" id="glucose" placeholder="mg/dL" min="44" max="199" step="1"
+                 oninput="validarCampoEnVivo('glucose')">
+          <span class="error-msg" id="err-glucose"></span>
+        </div>
+
+        <div class="input-group">
+          <label>Presión arterial
+            <span class="tooltip">ⓘ
+              <span class="tooltiptext">Presión diastólica (mmHg). Normal: &lt;80 · Límite: 80–89 · Alta: ≥90. Rango válido: 24–122.</span>
+            </span>
+          </label>
+          <input type="number" id="blood_pressure" placeholder="mmHg" min="24" max="122" step="1"
+                 oninput="validarCampoEnVivo('blood_pressure')">
+          <span class="error-msg" id="err-blood_pressure"></span>
+        </div>
+
+        <div class="input-group">
+          <label>Grosor de piel
+            <span class="tooltip">ⓘ
+              <span class="tooltiptext">Grosor del pliegue cutáneo del tríceps (mm). Rango válido: 7–99.</span>
+            </span>
+          </label>
+          <input type="number" id="skin_thickness" placeholder="mm" min="7" max="99" step="1"
+                 oninput="validarCampoEnVivo('skin_thickness')">
+          <span class="error-msg" id="err-skin_thickness"></span>
+        </div>
+
+        <div class="input-group">
+          <label>Insulina
+            <span class="tooltip">ⓘ
+              <span class="tooltiptext">Nivel de insulina en sangre (μU/mL). Normal en ayunas: &lt;100. Rango válido: 14–846.</span>
+            </span>
+          </label>
+          <input type="number" id="insulin" placeholder="μU/mL" min="14" max="846" step="1"
+                 oninput="validarCampoEnVivo('insulin')">
+          <span class="error-msg" id="err-insulin"></span>
+        </div>
+
+        <div class="input-group">
+          <label>IMC
+            <span class="tooltip">ⓘ
+              <span class="tooltiptext">Índice de Masa Corporal (kg/m²). Saludable: &lt;25 · Sobrepeso: 25–29.9 · Obesidad: ≥30. Rango válido: 18–67.</span>
+            </span>
+          </label>
+          <input type="number" id="bmi" placeholder="kg/m²" min="18" max="67" step="0.1"
+                 oninput="validarCampoEnVivo('bmi')">
+          <span class="error-msg" id="err-bmi"></span>
+        </div>
+
+        <div class="input-group">
+          <label>Historial familiar (DPF)
+            <span class="tooltip">ⓘ
+              <span class="tooltiptext">Diabetes Pedigree Function: carga genética familiar. Bajo: &lt;0.4 · Moderado: 0.4–0.79 · Alto: ≥0.8. Rango válido: 0.07–2.42.</span>
+            </span>
+          </label>
+          <input type="number" id="dpf" placeholder="0.00" min="0.07" max="2.42" step="0.01"
+                 oninput="validarCampoEnVivo('dpf')">
+          <span class="error-msg" id="err-dpf"></span>
+        </div>
+
+        <div class="input-group">
+          <label>Edad
+            <span class="tooltip">ⓘ
+              <span class="tooltiptext">Edad del paciente en años. Riesgo aumenta a partir de los 45 años. Rango válido: 21–81.</span>
+            </span>
+          </label>
+          <input type="number" id="age" placeholder="años" min="21" max="81" step="1"
+                 oninput="validarCampoEnVivo('age')">
+          <span class="error-msg" id="err-age"></span>
+        </div>
+
+      </div>
+
+      <button onclick="calcularRiesgo()" id="btn-calcular">
+        <span class="btn-text">Calcular Riesgo</span>
+        <span class="btn-spinner" style="display:none">Analizando...</span>
+      </button>
+
+    </div>
+
+    <!-- COLUMNA DERECHA: resultados -->
+    <div class="columna-resultado">
+
+      <!-- Estado vacío inicial -->
+      <div class="resultado-vacio" id="resultado-vacio">
+        <div class="resultado-vacio-icon">📋</div>
+        <p>Los resultados aparecerán aquí tras calcular el riesgo</p>
+      </div>
+
+      <!-- Resultado principal -->
+      <div id="resultado" class="resultado" style="display:none">
+        <div class="resultado-header">
+          <div class="resultado-icono" id="resultado-icono"></div>
+          <div>
+            <div class="resultado-porcentaje" id="resultado-porcentaje"></div>
+            <div class="resultado-riesgo" id="resultado-riesgo"></div>
+          </div>
+        </div>
+        <div class="barra-contenedor">
+          <div class="barra-fondo">
+            <div class="barra-progreso" id="barra-progreso"></div>
+          </div>
+          <div class="barra-etiquetas">
+            <span>Bajo</span>
+            <span>Moderado</span>
+            <span>Alto</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Explicación por variable -->
+      <div id="explicacion-contenedor" style="display:none">
+        <div class="explicacion-titulo">📊 Análisis por factor</div>
+        <div id="explicacion-lista"></div>
+      </div>
+
+    </div>
+
+  </div><!-- /layout-principal -->
+
+  <!-- ==============================
+       HISTORIAL (ancho completo)
   ============================== -->
   <div id="historial-contenedor" style="display:none">
     <div class="historial-header">
