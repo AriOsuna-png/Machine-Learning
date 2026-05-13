@@ -1,31 +1,75 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
 import joblib
 import numpy as np
 import os
+import json
+import logging
+from datetime import datetime
 
-app = FastAPI()
+# ==============================
+# LOGGING
+# ==============================
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("api.log"),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-model_path = os.path.join(current_dir, "best_model.pkl")
-model = joblib.load(model_path)
+# ==============================
+# INICIALIZAR APP
+# ==============================
+app = FastAPI(
+    title="Diabetes Predictor API",
+    description="API de predicción de diabetes basada en red neuronal MLP",
+    version="2.0.0"
+)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5500", "http://127.0.0.1:5500"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.get("/")
-def home():
-    return {"mensaje": "API de predicción de diabetes funcionando"}
+# ==============================
+# CARGAR MODELO
+# ==============================
+current_dir = os.path.dirname(os.path.abspath(__file__))
+model_path  = os.path.join(current_dir, "best_model.pkl")
+
+try:
+    model = joblib.load(model_path)
+    logger.info(f"Modelo cargado correctamente desde {model_path}")
+except FileNotFoundError:
+    model = None
+    logger.error(f"No se encontró el modelo en {model_path}. Ejecuta compare_models.py primero.")
 
 # ==============================
-# RANGOS CLÍNICOS DE REFERENCIA
+# MODELO DE ENTRADA CON VALIDACIÓN PYDANTIC
+# Cada campo tiene rango mínimo y máximo basado en el dataset Pima Indians.
+# FastAPI valida automáticamente antes de llegar al endpoint:
+# si un valor está fuera de rango retorna HTTP 422 con mensaje claro.
 # ==============================
+class DiabetesInput(BaseModel):
+    pregnancies:                int   = Field(..., ge=0,    le=17,   description="Número de embarazos (0–17)")
+    glucose:                    float = Field(..., ge=44,   le=199,  description="Glucosa en sangre mg/dL (44–199)")
+    blood_pressure:             float = Field(..., ge=24,   le=122,  description="Presión diastólica mmHg (24–122)")
+    skin_thickness:             float = Field(..., ge=7,    le=99,   description="Grosor pliegue tríceps mm (7–99)")
+    insulin:                    float = Field(..., ge=14,   le=846,  description="Insulina μU/mL (14–846)")
+    bmi:                        float = Field(..., ge=18.0, le=67.0, description="Índice de Masa Corporal kg/m² (18–67)")
+    diabetes_pedigree_function: float = Field(..., ge=0.07, le=2.42, description="Función de pedigrí de diabetes (0.07–2.42)")
+    age:                        int   = Field(..., ge=21,   le=81,   description="Edad en años (21–81)")
 
+# ==============================
+# RANGOS CLÍNICOS Y EXPLICACIONES
+# ==============================
 def generar_explicacion(pregnancies, glucose, blood_pressure, skin_thickness, insulin, bmi, dpf, age):
     factores = []
 
@@ -111,29 +155,71 @@ def generar_explicacion(pregnancies, glucose, blood_pressure, skin_thickness, in
 
     return factores
 
+# ==============================
+# ENDPOINT RAÍZ
+# ==============================
+@app.get("/")
+def home():
+    return {"mensaje": "Diabetes Predictor API v2.0 funcionando"}
 
 # ==============================
-# ENDPOINT DE PREDICCIÓN
+# ENDPOINT /health
+# Útil para verificar que la API está viva y el modelo está cargado.
 # ==============================
+@app.get("/health")
+def health():
+    return {
+        "status":        "ok" if model is not None else "error",
+        "modelo_cargado": model is not None,
+        "timestamp":     datetime.now().isoformat()
+    }
 
+# ==============================
+# ENDPOINT /model-info
+# Expone la versión y métricas del modelo entrenado.
+# Lee el archivo model_metrics.json si existe.
+# ==============================
+@app.get("/model-info")
+def model_info():
+    metrics_path = os.path.join(current_dir, "model_metrics.json")
+    if os.path.exists(metrics_path):
+        with open(metrics_path, "r") as f:
+            metrics = json.load(f)
+    else:
+        metrics = {"nota": "model_metrics.json no encontrado. Ejecuta compare_models.py para generarlo."}
+
+    return {
+        "modelo":  "MLP Neural Network (128-64-32)",
+        "version": "2.0.0",
+        "dataset": "Pima Indians Diabetes Dataset",
+        "metricas": metrics
+    }
+
+# ==============================
+# ENDPOINT /predict
+# Recibe DiabetesInput (validado por Pydantic) y retorna predicción.
+# Si los datos son inválidos, FastAPI retorna HTTP 422 automáticamente.
+# Si el modelo no está cargado, retorna HTTP 503.
+# ==============================
 @app.post("/predict")
-def predict(data: dict):
-    try:
-        pregnancies = data["pregnancies"]
-        glucose = data["glucose"]
-        blood_pressure = data["blood_pressure"]
-        skin_thickness = data["skin_thickness"]
-        insulin = data["insulin"]
-        bmi = data["bmi"]
-        dpf = data["diabetes_pedigree_function"]
-        age = data["age"]
+def predict(data: DiabetesInput):
+    if model is None:
+        logger.error("Predicción solicitada pero el modelo no está cargado.")
+        raise HTTPException(status_code=503, detail="Modelo no disponible. Ejecuta compare_models.py primero.")
 
+    try:
         input_data = np.array([[
-            pregnancies, glucose, blood_pressure, skin_thickness,
-            insulin, bmi, dpf, age
+            data.pregnancies,
+            data.glucose,
+            data.blood_pressure,
+            data.skin_thickness,
+            data.insulin,
+            data.bmi,
+            data.diabetes_pedigree_function,
+            data.age
         ]])
 
-        prediction = model.predict(input_data)[0]
+        prediction  = model.predict(input_data)[0]
         probability = round(float(model.predict_proba(input_data)[0][1]), 4)
 
         if probability < 0.2:
@@ -144,15 +230,20 @@ def predict(data: dict):
             riesgo = "Alto riesgo de diabetes"
 
         explicacion = generar_explicacion(
-            pregnancies, glucose, blood_pressure, skin_thickness, insulin, bmi, dpf, age
+            data.pregnancies, data.glucose, data.blood_pressure,
+            data.skin_thickness, data.insulin, data.bmi,
+            data.diabetes_pedigree_function, data.age
         )
 
+        logger.info(f"Predicción: prob={probability:.4f} nivel={riesgo}")
+
         return {
-            "prediction": int(prediction),
+            "prediction":  int(prediction),
             "probability": probability,
-            "risk": riesgo,
+            "risk":        riesgo,
             "explicacion": explicacion
         }
 
     except Exception as e:
-        return {"error": str(e)}
+        logger.error(f"Error en predicción: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
