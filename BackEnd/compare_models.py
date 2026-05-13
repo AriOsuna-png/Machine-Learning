@@ -6,14 +6,16 @@ import pandas as pd
 import numpy as np
 import joblib
 import os
+from imblearn.over_sampling import SMOTE
+from imblearn.pipeline import Pipeline as ImbPipeline
 from sklearn.calibration import CalibratedClassifierCV
-from sklearn.model_selection import train_test_split, cross_validate
+from sklearn.model_selection import train_test_split, cross_validate, StratifiedKFold
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
 
 # ==============================
 # 1. CARGAR DATASET
@@ -95,40 +97,64 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 # ==============================
-# 5. DEFINIR MODELOS (PIPELINE)
+# 5. DEFINIR MODELOS (PIPELINE CON SMOTE)
 # ==============================
+# Se usa ImbPipeline (de imbalanced-learn) en lugar del Pipeline
+# estándar de sklearn, ya que permite incluir SMOTE dentro del pipeline
+# de forma correcta: SMOTE solo se aplica en el fold de entrenamiento
+# durante la validación cruzada, nunca en el fold de validación.
+# Esto evita data leakage y da métricas más realistas.
+#
+# El MLP mejorado incluye:
+#   - Arquitectura más profunda (128 → 64 → 32 neuronas)
+#   - Regularización L2 (alpha=0.001) para reducir overfitting
+#   - learning_rate='adaptive': reduce el LR si la pérdida no mejora
+#   - early_stopping=True: detiene el entrenamiento al estancarse
+#   - validation_fraction=0.1: usa 10% del train para monitorear
 
 models = {
 
-    "Logistic Regression": Pipeline([
+    "Logistic Regression": ImbPipeline([
+        ("smote",  SMOTE(random_state=42)),
         ("scaler", StandardScaler()),
-        ("model", LogisticRegression(max_iter=2000))
+        ("model",  LogisticRegression(max_iter=2000))
     ]),
 
-    "Decision Tree": Pipeline([
+    "Decision Tree": ImbPipeline([
+        ("smote", SMOTE(random_state=42)),
         ("model", DecisionTreeClassifier(max_depth=5, random_state=42))
     ]),
 
-    "MLP Neural Network": Pipeline([
+    "MLP Neural Network": ImbPipeline([
+        ("smote",  SMOTE(random_state=42)),
         ("scaler", StandardScaler()),
-        ("model", MLPClassifier(
-            hidden_layer_sizes=(50, 30),
+        ("model",  MLPClassifier(
+            hidden_layer_sizes=(128, 64, 32),
             activation='relu',
             solver='adam',
-            max_iter=3000,
+            alpha=0.001,
+            learning_rate='adaptive',
+            max_iter=5000,
+            early_stopping=True,
+            validation_fraction=0.1,
             random_state=42
         ))
     ])
 }
 
 # ==============================
-# 6. VALIDACIÓN CRUZADA (5-FOLD)
+# 6. VALIDACIÓN CRUZADA (5-FOLD ESTRATIFICADO)
 # ==============================
+# StratifiedKFold garantiza que cada fold tenga la misma proporción
+# de clases que el dataset original, importante con clases desbalanceadas.
+# Se agrega roc_auc como métrica extra: más informativa que accuracy
+# para problemas de clasificación binaria con desbalance.
 
-scoring = ['accuracy', 'precision', 'recall', 'f1']
+scoring = ['accuracy', 'precision', 'recall', 'f1', 'roc_auc']
+cv      = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 results = {}
 
-print("\n========== VALIDACIÓN CRUZADA (5-FOLD) ==========\n")
+print("\n========== VALIDACIÓN CRUZADA (5-FOLD ESTRATIFICADO) ==========\n")
 
 for name, model in models.items():
 
@@ -136,7 +162,7 @@ for name, model in models.items():
         model,
         X_train,
         y_train,
-        cv=5,
+        cv=cv,
         scoring=scoring,
         return_train_score=False
     )
@@ -146,6 +172,7 @@ for name, model in models.items():
     print(f"  Precision Promedio: {scores['test_precision'].mean():.4f}")
     print(f"  Recall Promedio:    {scores['test_recall'].mean():.4f}")
     print(f"  F1-score Promedio:  {scores['test_f1'].mean():.4f}")
+    print(f"  ROC-AUC Promedio:   {scores['test_roc_auc'].mean():.4f}")
     print("-------------------------------------------------\n")
 
     results[name] = scores['test_recall'].mean()  # Métrica principal: Recall
@@ -162,18 +189,30 @@ print(f"\n🏆 Modelo seleccionado (según Recall promedio): {best_model_name}")
 # ==============================
 # 8. ENTRENAR Y CALIBRAR MEJOR MODELO
 # ==============================
+# Para el entrenamiento final aplicamos SMOTE directamente sobre
+# X_train completo (no dentro de CV), ya que aquí no hay riesgo
+# de data leakage — el test set nunca se toca.
 
-best_model.fit(X_train, y_train)
+# Aplicar SMOTE al conjunto de entrenamiento final
+smote = SMOTE(random_state=42)
+X_train_bal, y_train_bal = smote.fit_resample(X_train, y_train)
+
+print(f"  Clases antes de SMOTE: {dict(y_train.value_counts())}")
+print(f"  Clases después de SMOTE: {dict(pd.Series(y_train_bal).value_counts())}\n")
+
+best_model.fit(X_train_bal, y_train_bal)
 
 # Calibrar probabilidades con isotonic regression
 calibrated_model = CalibratedClassifierCV(best_model, method='isotonic', cv=5)
-calibrated_model.fit(X_train, y_train)
+calibrated_model.fit(X_train_bal, y_train_bal)
 
-y_pred = calibrated_model.predict(X_test)
+y_pred      = calibrated_model.predict(X_test)
+y_pred_prob = calibrated_model.predict_proba(X_test)[:, 1]
 
 print("\n========== EVALUACIÓN FINAL EN TEST ==========\n")
 print(classification_report(y_test, y_pred))
-print("Matriz de Confusión:")
+print(f"ROC-AUC en test: {roc_auc_score(y_test, y_pred_prob):.4f}")
+print("\nMatriz de Confusión:")
 print(confusion_matrix(y_test, y_pred))
 
 # ==============================
