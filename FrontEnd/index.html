@@ -190,6 +190,39 @@
         <button class="btn-limpiar" onclick="limpiarHistorial()">Limpiar</button>
       </div>
     </div>
+
+    <!-- Panel de estadísticas -->
+    <div class="stats-panel">
+      <div class="stat-card">
+        <div class="stat-icono">🔢</div>
+        <div class="stat-info">
+          <span class="stat-valor" id="stat-total">0</span>
+          <span class="stat-label">Consultas en sesión</span>
+        </div>
+      </div>
+      <div class="stat-card stat-card-alto">
+        <div class="stat-icono">⚠️</div>
+        <div class="stat-info">
+          <span class="stat-valor" id="stat-alto">0%</span>
+          <span class="stat-label">Con riesgo alto</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icono">📈</div>
+        <div class="stat-info">
+          <span class="stat-valor" id="stat-promedio">0%</span>
+          <span class="stat-label">Probabilidad promedio</span>
+        </div>
+      </div>
+      <div class="stat-card stat-card-nivel">
+        <div class="stat-icono" id="stat-nivel-icono">✅</div>
+        <div class="stat-info">
+          <span class="stat-valor" id="stat-nivel">—</span>
+          <span class="stat-label">Nivel más frecuente</span>
+        </div>
+      </div>
+    </div>
+
     <div id="historial-lista"></div>
   </div>
 

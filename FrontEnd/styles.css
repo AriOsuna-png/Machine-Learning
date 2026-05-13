@@ -512,6 +512,64 @@ button:disabled {
 }
 
 /* ==============================
+   PANEL DE ESTADÍSTICAS
+============================== */
+.stats-panel {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.stat-card {
+  background: var(--bg-col-resultado);
+  border: 1.5px solid var(--border-col);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.stat-icono {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-valor {
+  font-family: 'DM Mono', monospace;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text-titulo);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* Variantes de color para tarjeta de riesgo alto */
+.stat-alto-bajo     { border-color: #6fcf97; background: var(--riesgo-bajo-bg); }
+.stat-alto-moderado { border-color: #f2994a; background: var(--riesgo-mod-bg);  }
+.stat-alto-alto     { border-color: #eb5757; background: var(--riesgo-alto-bg); }
+
+/* Variantes de color para tarjeta de nivel frecuente */
+.stat-nivel-bajo     { border-color: #6fcf97; }
+.stat-nivel-moderado { border-color: #f2994a; }
+.stat-nivel-alto     { border-color: #eb5757; }
+
+/* ==============================
    HISTORIAL (ancho completo)
 ============================== */
 #historial-contenedor {

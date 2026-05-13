@@ -77,6 +77,46 @@ function guardarEnHistorial(data, resultado) {
   renderHistorial();
 }
 
+function actualizarStats() {
+  if (historial.length === 0) return;
+
+  // Total de consultas
+  document.getElementById("stat-total").textContent = historial.length;
+
+  // Porcentaje con riesgo alto
+  const totalAlto = historial.filter(e => e.nivel === "alto").length;
+  const pctAlto   = Math.round((totalAlto / historial.length) * 100);
+  document.getElementById("stat-alto").textContent = `${pctAlto}%`;
+
+  // Actualizar color de la tarjeta de riesgo alto dinámicamente
+  const cardAlto = document.querySelector(".stat-card-alto");
+  cardAlto.classList.remove("stat-alto-bajo", "stat-alto-moderado", "stat-alto-alto");
+  if      (pctAlto >= 50) cardAlto.classList.add("stat-alto-alto");
+  else if (pctAlto >= 20) cardAlto.classList.add("stat-alto-moderado");
+  else                    cardAlto.classList.add("stat-alto-bajo");
+
+  // Promedio de probabilidad
+  const sumProb  = historial.reduce((acc, e) => acc + parseFloat(e.porcentaje), 0);
+  const promedio = (sumProb / historial.length).toFixed(1);
+  document.getElementById("stat-promedio").textContent = `${promedio}%`;
+
+  // Nivel más frecuente
+  const conteo = historial.reduce((acc, e) => {
+    acc[e.nivel] = (acc[e.nivel] || 0) + 1;
+    return acc;
+  }, {});
+  const nivelFrecuente = Object.entries(conteo).sort((a, b) => b[1] - a[1])[0][0];
+  const iconoNivel     = { bajo: "✅", moderado: "🔶", alto: "⚠️" }[nivelFrecuente];
+  const labelNivel     = nivelFrecuente.charAt(0).toUpperCase() + nivelFrecuente.slice(1);
+  document.getElementById("stat-nivel").textContent      = labelNivel;
+  document.getElementById("stat-nivel-icono").textContent = iconoNivel;
+
+  // Colorear borde de tarjeta según nivel frecuente
+  const cardNivel = document.querySelector(".stat-card-nivel");
+  cardNivel.classList.remove("stat-nivel-bajo", "stat-nivel-moderado", "stat-nivel-alto");
+  cardNivel.classList.add(`stat-nivel-${nivelFrecuente}`);
+}
+
 function renderHistorial() {
   const contenedor = document.getElementById("historial-contenedor");
   const lista      = document.getElementById("historial-lista");
@@ -88,6 +128,7 @@ function renderHistorial() {
 
   contenedor.style.display = "block";
   lista.innerHTML = "";
+  actualizarStats();
 
   historial.forEach((entrada, index) => {
     const hora = entrada.timestamp.toLocaleTimeString("es-MX", {
