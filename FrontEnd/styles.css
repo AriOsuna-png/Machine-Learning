@@ -1,4 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap');
+@font-face {
+  font-family: 'DM Sans';
+  src: url('fonts/dm-sans-400.woff2') format('woff2');
+  font-weight: 400;
+}
+@font-face {
+  font-family: 'DM Sans';
+  src: url('fonts/dm-sans-500.woff2') format('woff2');
+  font-weight: 500;
+}
+@font-face {
+  font-family: 'DM Sans';
+  src: url('fonts/dm-sans-600.woff2') format('woff2');
+  font-weight: 600;
+}
+@font-face {
+  font-family: 'DM Mono';
+  src: url('fonts/dm-mono-500.woff2') format('woff2');
+  font-weight: 500;
+}
 
 /* ==============================
    VARIABLES — MODO CLARO
